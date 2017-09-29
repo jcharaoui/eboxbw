@@ -35,6 +35,8 @@ date, download, upload and combined bandwidth usage."""
 
     ap.add_argument('-d', '--details', action='store_true',
                     help='display more bandwidth usage details')
+    ap.add_argument('-m', '--machine', action='store_true',
+                    help='display data in machine-readable format')
     ap.add_argument('-u', '--unit', action='store', type=str,
                     default='g', metavar='UNIT',
                     help='set display unit to UNIT (\"g\" for GiB or \"m\" for MiB)')
@@ -79,6 +81,11 @@ def _yes_no(v):
         False: colored('no', 'red', attrs=['bold']),
     }[v]
 
+def _yes_no_machine(v):
+    return {
+        True: 1,
+        False: 0,
+    }[v]
 
 def _effective(t):
     return colored(t, 'yellow')
@@ -157,6 +164,48 @@ def _print_human(usage_info, conv_func, punit, details):
 
         print_table_border()
 
+def _print_machine(usage_info, conv_func, punit, details):
+
+    def print_row(date, dl, ul, cb, date_cb):
+        date_txt = date_cb(date)
+        fmt_row1 = '{}::{}::{}::{}'
+
+        print(fmt_row1.format(date_txt, dl.real_gb, ul.real_gb, cb.real_gb))
+
+        if dl.effective_gb is not None:
+            dl_txt = dl.effective_gb
+            ul_txt = ul.effective_gb
+            cb_txt = cb.effective_gb
+
+            print(fmt_row1.format('effective', dl_txt, ul_txt, cb_txt))
+
+    if details:
+        print('{}::{}'.format('plan', usage_info.plan))
+        print('{}::{}'.format('super_off_peak',
+                                         _yes_no_machine(usage_info.has_super_off_peak)))
+        print('{}::{}'.format('extra_blocks',
+                                          usage_info.extra_blocks))
+        print('{}::{}'.format('capacity',
+                                   usage_info.plan_cap.real_gb))
+        print('{}::{}'.format('available_usage',
+                                   usage_info.available_usage.real_gb))
+
+    cur_month_usage = usage_info.cur_month_usage
+    date = cur_month_usage.date
+
+    if date is None:
+        _print_warning('no usage data available yet for current month')
+        return
+
+    tdl = cur_month_usage.dl_usage
+    tul = cur_month_usage.ul_usage
+    tcb = cur_month_usage.combined_usage
+    print_row(date, tdl, tul, tcb, lambda d: d.strftime('%Y-%m'))
+
+    if details:
+        for du in cur_month_usage.days_usage:
+            print_row(du.date, du.dl_usage, du.ul_usage, du.combined_usage,
+                      lambda d: d.strftime('%Y-%m-%d'))
 
 def _main(args):
     try:
@@ -185,7 +234,10 @@ def _main(args):
         conv_func = lambda x: x * 1024
         punit = 'MiB'
 
-    _print_human(usage_info, conv_func, punit, args.details)
+    if args.machine:
+        _print_machine(usage_info, conv_func, punit, args.details)
+    else:
+        _print_human(usage_info, conv_func, punit, args.details)
 
 
 def run():
