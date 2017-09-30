@@ -84,8 +84,8 @@ def _yes_no(v):
 
 def _yes_no_machine(v):
     return {
-        True: 1,
-        False: 0,
+        True: 'yes',
+        False: 'no',
     }[v]
 
 
