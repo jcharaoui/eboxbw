@@ -182,13 +182,13 @@ def _print_machine(usage_info, conv_func, punit, details):
 
     if details:
         print('{},{}'.format('plan', usage_info.plan))
-        print('{},{}'.format('super_off_peak',
+        print('{},{}'.format('super-off-peak',
                               _yes_no_machine(usage_info.has_super_off_peak)))
-        print('{},{}'.format('extra_blocks',
+        print('{},{}'.format('extra-blocks',
                               usage_info.extra_blocks))
         print('{},{}'.format('capacity',
                               conv_func(usage_info.plan_cap.real_gb)))
-        print('{},{}'.format('available_usage',
+        print('{},{}'.format('available-usage',
                               conv_func(usage_info.available_usage.real_gb)))
 
     cur_month_usage = usage_info.cur_month_usage
