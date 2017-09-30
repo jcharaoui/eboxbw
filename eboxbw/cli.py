@@ -170,13 +170,15 @@ def _print_machine(usage_info, conv_func, punit, details):
     def print_row(date, dl, ul, cb, date_cb):
         date_txt = date_cb(date)
         fmt_row1 = '{},{},{},{}'
-        print(fmt_row1.format(date_txt, dl.real_gb, ul.real_gb, cb.real_gb))
+        print(fmt_row1.format(date_txt, conv_func(dl.real_gb),
+                              conv_func(ul.real_gb), conv_func(cb.real_gb)))
 
         if dl.effective_gb is not None:
             dl_txt = dl.effective_gb
             ul_txt = ul.effective_gb
             cb_txt = cb.effective_gb
-            print(fmt_row1.format('effective', dl_txt, ul_txt, cb_txt))
+            print(fmt_row1.format('effective', conv_func(dl_txt),
+                                  conv_func(ul_txt), conv_func(cb_txt)))
 
     if details:
         print('{},{}'.format('plan', usage_info.plan))
@@ -185,9 +187,9 @@ def _print_machine(usage_info, conv_func, punit, details):
         print('{},{}'.format('extra_blocks',
                               usage_info.extra_blocks))
         print('{},{}'.format('capacity',
-                              usage_info.plan_cap.real_gb))
+                              conv_func(usage_info.plan_cap.real_gb)))
         print('{},{}'.format('available_usage',
-                              usage_info.available_usage.real_gb))
+                              conv_func(usage_info.available_usage.real_gb)))
 
     cur_month_usage = usage_info.cur_month_usage
     date = cur_month_usage.date
