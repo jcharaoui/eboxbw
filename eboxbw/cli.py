@@ -67,6 +67,10 @@ def _print_warning(msg):
     cprint('warning: {}'.format(msg), 'yellow', attrs=['bold'], file=sys.stderr)
 
 
+def _print_usage_data_warning():
+    _print_warning('no usage data available yet for current month')
+
+
 def _bold(t):
     return colored(t, attrs=['bold'])
 
@@ -141,7 +145,7 @@ def _print_human(usage_info, conv_func, punit, details):
     date = cur_month_usage.date
 
     if date is None:
-        _print_warning('no usage data available yet for current month')
+        _print_usage_data_warning()
         return
 
     if usage_info.has_super_off_peak:
@@ -195,7 +199,7 @@ def _print_machine(usage_info, conv_func, punit, details):
     date = cur_month_usage.date
 
     if date is None:
-        _print_warning('no usage data available yet for current month')
+        _print_usage_data_warning()
         return
 
     tdl = cur_month_usage.dl_usage
